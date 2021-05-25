@@ -26,6 +26,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 exports.__esModule = true;
 exports.Users = void 0;
 var typeorm_1 = require("typeorm");
+var Planets_1 = require("./Planets");
+var Characters_1 = require("./Characters");
 var Users = /** @class */ (function (_super) {
     __extends(Users, _super);
     function Users() {
@@ -36,13 +38,15 @@ var Users = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], Users.prototype, "id");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "first_name");
+        typeorm_1.ManyToMany(function () { return Planets_1.Planets; }),
+        typeorm_1.JoinTable(),
+        __metadata("design:type", Array)
+    ], Users.prototype, "planets");
     __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "last_name");
+        typeorm_1.ManyToMany(function () { return Characters_1.Characters; }),
+        typeorm_1.JoinTable(),
+        __metadata("design:type", Array)
+    ], Users.prototype, "characters");
     __decorate([
         typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)

@@ -1,27 +1,33 @@
-import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToMany, JoinTable } from 'typeorm';
+import { Planets } from './Planets';
+import { Characters } from './Characters';
 
 @Entity()
-export class Users extends BaseEntity{
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Users extends BaseEntity {
 
-  @Column()
-  first_name: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  last_name: string;
+    //Planetas favoritos
+    @ManyToMany(() => Planets)
+    @JoinTable()
+    planets: Planets[];
 
-  @Column({unique: true})
-  email: string;
+    //Personajes favoritos
+    @ManyToMany(() => Characters)
+    @JoinTable()
+    characters: Characters[];
 
-  @Column()
-  password: string;
+    // @Column()
+    // first_name: string;
 
-  // @ManyToMany(() => Planet)
-  // @JoinTable()
-  // planets: Planet[];
-  
+    // @Column()
+    // last_name: string;
+
+    @Column({ unique: true })
+    email: string;
+
+    @Column()
+    password: string;
+
 }

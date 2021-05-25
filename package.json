@@ -21,7 +21,8 @@
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "tsc-watch": "^4.2.9",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.32",
+    "typeorm-uml": "^1.6.3"
   },
   "devDependencies": {
     "@admin-bro/express": "^3.1.0",
@@ -49,7 +50,8 @@
     "start": "NODE_ENV=development tsc-watch --project . --onSuccess 'nodemon ./dist/app.js'",
     "build": "rm -rf ./dist && tsc --project ./",
     "makemigrations": "typeorm migration:generate -n M && npm run build",
-    "migrate": "typeorm migration:run"
+    "migrate": "typeorm migration:run",
+    "diagram": "tsc && typeorm-uml ormconfig.js"
   },
   "keywords": [],
   "author": "Manuel Ortega Carcamo",
