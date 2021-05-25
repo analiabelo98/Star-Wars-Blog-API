@@ -35,21 +35,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-exports.getUsers = exports.createUser = void 0;
+exports.login = exports.FavCharacters = exports.createPlanet = exports.createCharacter = exports.getPlanet = exports.getPlanets = exports.getCharacter = exports.getCharacters = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
+var Characters_1 = require("./entities/Characters");
+var Planets_1 = require("./entities/Planets");
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-                if (!req.body.first_name)
-                    throw new utils_1.Exception("Please provide a first_name");
-                if (!req.body.last_name)
-                    throw new utils_1.Exception("Please provide a last_name");
+                /*if(!req.body.first_name) throw new Exception("Please provide a first_name")
+                if(!req.body.last_name) throw new Exception("Please provide a last_name")*/
                 if (!req.body.email)
                     throw new utils_1.Exception("Please provide an email");
                 if (!req.body.password)
@@ -81,3 +85,151 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.getUsers = getUsers;
+var getCharacters = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var characters;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Characters_1.Characters).find()];
+            case 1:
+                characters = _a.sent();
+                return [2 /*return*/, res.json(characters)];
+        }
+    });
+}); };
+exports.getCharacters = getCharacters;
+var getCharacter = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var character;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Characters_1.Characters).findOne(req.params.id)];
+            case 1:
+                character = _a.sent();
+                return [2 /*return*/, res.json(character)];
+        }
+    });
+}); };
+exports.getCharacter = getCharacter;
+var getPlanets = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var planets;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Planets_1.Planets).find()];
+            case 1:
+                planets = _a.sent();
+                return [2 /*return*/, res.json(planets)];
+        }
+    });
+}); };
+exports.getPlanets = getPlanets;
+var getPlanet = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var planet;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Planets_1.Planets).findOne(req.params.id)];
+            case 1:
+                planet = _a.sent();
+                return [2 /*return*/, res.json(planet)];
+        }
+    });
+}); };
+exports.getPlanet = getPlanet;
+var createCharacter = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var characterRepo, character, newCharacter, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.name)
+                    throw new utils_1.Exception("Please provide an name");
+                characterRepo = typeorm_1.getRepository(Characters_1.Characters);
+                return [4 /*yield*/, characterRepo.findOne({ where: { name: req.body.name } })];
+            case 1:
+                character = _a.sent();
+                if (character)
+                    throw new utils_1.Exception("Character already exists with this name");
+                newCharacter = typeorm_1.getRepository(Characters_1.Characters).create(req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Characters_1.Characters).save(newCharacter)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.createCharacter = createCharacter;
+var createPlanet = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var planetRepo, planet, newPlanet, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.name)
+                    throw new utils_1.Exception("Please provide an name");
+                planetRepo = typeorm_1.getRepository(Planets_1.Planets);
+                return [4 /*yield*/, planetRepo.findOne({ where: { name: req.body.name } })];
+            case 1:
+                planet = _a.sent();
+                if (planet)
+                    throw new utils_1.Exception("planet already exists with this name");
+                newPlanet = typeorm_1.getRepository(Planets_1.Planets).create(req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Planets_1.Planets).save(newPlanet)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.createPlanet = createPlanet;
+var FavCharacters = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, character, favoritosUser, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log(req.user);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).find({ relations: ["characters"], where: { id: req.params.id } })];
+            case 1:
+                user = _a.sent();
+                return [4 /*yield*/, typeorm_1.getRepository(Characters_1.Characters).findOne(req.params.id)];
+            case 2:
+                character = _a.sent();
+                console.log(character);
+                console.log(user);
+                if (!(user && character)) return [3 /*break*/, 4];
+                favoritosUser = new Users_1.Users();
+                console.log(favoritosUser);
+                favoritosUser.email = req.body.email;
+                favoritosUser.password = req.body.password;
+                favoritosUser.characters = [character];
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(favoritosUser)];
+            case 3:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+            case 4: return [2 /*return*/, res.json("not found")];
+        }
+    });
+}); };
+exports.FavCharacters = FavCharacters;
+//controlador para el logueo
+var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Please specify an email on your request body", 400);
+                if (!req.body.password)
+                    throw new utils_1.Exception("Please specify a password on your request body", 400);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)
+                    // We need to validate that a user with this email and password exists in the DB
+                ];
+            case 1:
+                userRepo = _a.sent();
+                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email, password: req.body.password } })];
+            case 2:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("Invalid email or password", 401);
+                token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY, { expiresIn: 60 * 60 });
+                // return the user and the recently created token to the client
+                return [2 /*return*/, res.json({ user: user, token: token })];
+        }
+    });
+}); };
+exports.login = login;
