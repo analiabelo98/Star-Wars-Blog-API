@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.login = exports.FavCharacters = exports.createPlanet = exports.createCharacter = exports.getPlanet = exports.getPlanets = exports.getCharacter = exports.getCharacters = exports.getUsers = exports.createUser = void 0;
+exports.login = exports.FavPlanets = exports.FavCharacters = exports.createPlanet = exports.createCharacter = exports.getPlanet = exports.getPlanets = exports.getCharacter = exports.getCharacters = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
@@ -178,34 +178,57 @@ var createPlanet = function (req, res) { return __awaiter(void 0, void 0, void 0
 }); };
 exports.createPlanet = createPlanet;
 var FavCharacters = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, character, favoritosUser, results;
+    var userRepo, user, characterRepo, character, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log(req.user);
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).find({ relations: ["characters"], where: { id: req.params.id } })];
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, userRepo.findOne({ relations: ["characters"], where: { id: req.body.usersId } })];
             case 1:
                 user = _a.sent();
-                return [4 /*yield*/, typeorm_1.getRepository(Characters_1.Characters).findOne(req.params.id)];
+                if (!user)
+                    throw new utils_1.Exception("User not exist");
+                characterRepo = typeorm_1.getRepository(Characters_1.Characters);
+                return [4 /*yield*/, characterRepo.findOne(req.params.id)];
             case 2:
                 character = _a.sent();
-                console.log(character);
-                console.log(user);
-                if (!(user && character)) return [3 /*break*/, 4];
-                favoritosUser = new Users_1.Users();
-                console.log(favoritosUser);
-                favoritosUser.email = req.body.email;
-                favoritosUser.password = req.body.password;
-                favoritosUser.characters = [character];
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(favoritosUser)];
+                if (!character)
+                    throw new utils_1.Exception("User not exist");
+                user.characters.push(character);
+                return [4 /*yield*/, userRepo.save(user)];
             case 3:
                 results = _a.sent();
                 return [2 /*return*/, res.json(results)];
-            case 4: return [2 /*return*/, res.json("not found")];
         }
     });
 }); };
 exports.FavCharacters = FavCharacters;
+var FavPlanets = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, planetRepo, planet, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, userRepo.findOne({ relations: ["planets"], where: { id: req.body.usersId } })];
+            case 1:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("User not exist");
+                planetRepo = typeorm_1.getRepository(Planets_1.Planets);
+                return [4 /*yield*/, planetRepo.findOne(req.params.id)];
+            case 2:
+                planet = _a.sent();
+                if (!planet)
+                    throw new utils_1.Exception("User not exist");
+                user.planets.push(planet);
+                return [4 /*yield*/, userRepo.save(user)];
+            case 3:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.FavPlanets = FavPlanets;
 //controlador para el logueo
 var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, token;

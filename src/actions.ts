@@ -78,42 +78,49 @@ export const createPlanet = async (req: Request, res: Response): Promise<Respons
 }
 
 export const FavCharacters = async (req: Request, res: Response): Promise<Response> => {
-console.log(req.user)
-const user = await getRepository(Users).find({relations: ["characters"], where: {id: req.params.id}})
-const character = await getRepository(Characters).findOne(req.params.id)
-console.log(character);
-console.log(user);
+    const userRepo = getRepository(Users)
+    let user = await userRepo.findOne({ relations: ["characters"], where: { id: req.body.usersId } });
+    if (!user) throw new Exception("User not exist")
 
-if(user && character){
-    const favoritosUser = new Users()
-    console.log(favoritosUser);
-    favoritosUser.email = req.body.email
-    favoritosUser.password = req.body.password
-     favoritosUser.characters = [character]
-     const results = await getRepository(Users).save(favoritosUser);
-     return res.json(results)
+    const characterRepo = getRepository(Characters)
+    const character = await characterRepo.findOne(req.params.id)
+    if (!character) throw new Exception("User not exist")
+
+    user.characters.push(character)
+    const results = await userRepo.save(user);
+    return res.json(results)
 }
 
-return res.json("not found")
-}
+export const FavPlanets = async (req: Request, res: Response): Promise<Response> => {
+    const userRepo = getRepository(Users)
+    let user = await userRepo.findOne({ relations: ["planets"], where: { id: req.body.usersId } });
+    if (!user) throw new Exception("User not exist")
 
+    const planetRepo = getRepository(Planets)
+    const planet = await planetRepo.findOne(req.params.id)
+    if (!planet) throw new Exception("User not exist")
+
+    user.planets.push(planet)
+    const results = await userRepo.save(user);
+    return res.json(results)
+}
 
 
 //controlador para el logueo
-export const login = async (req: Request, res: Response): Promise<Response> =>{
-		
-	if(!req.body.email) throw new Exception("Please specify an email on your request body", 400)
-	if(!req.body.password) throw new Exception("Please specify a password on your request body", 400)
+export const login = async (req: Request, res: Response): Promise<Response> => {
 
-	const userRepo = await getRepository(Users)
+    if (!req.body.email) throw new Exception("Please specify an email on your request body", 400)
+    if (!req.body.password) throw new Exception("Please specify a password on your request body", 400)
 
-	// We need to validate that a user with this email and password exists in the DB
-	const user = await userRepo.findOne({ where: { email: req.body.email, password: req.body.password }})
-	if(!user) throw new Exception("Invalid email or password", 401)
+    const userRepo = await getRepository(Users)
 
-	// this is the most important line in this function, it create a JWT token
-	const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
-	
-	// return the user and the recently created token to the client
-	return res.json({ user, token });
+    // We need to validate that a user with this email and password exists in the DB
+    const user = await userRepo.findOne({ where: { email: req.body.email, password: req.body.password } })
+    if (!user) throw new Exception("Invalid email or password", 401)
+
+    // this is the most important line in this function, it create a JWT token
+    const token = jwt.sign({ user }, process.env.JWT_KEY as string, { expiresIn: 60 * 60 });
+
+    // return the user and the recently created token to the client
+    return res.json({ user, token });
 }

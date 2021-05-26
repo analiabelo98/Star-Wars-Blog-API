@@ -32,11 +32,12 @@ const verifyToken= (req: Request,res:Response, next:NextFunction) =>{
     next()
 }
 
-router.get('/user', verifyToken, safe(actions.getUsers));
+router.get('/user', safe(actions.getUsers));
 router.post('/characters', safe(actions.createCharacter));
 router.get('/character/:id', safe(actions.getCharacter));
 router.get('/planet/:id', safe(actions.getPlanet));
 router.post('/planets', safe(actions.createPlanet));
 router.post('/favCharacter/:id', safe(actions.FavCharacters));
+router.post('/favPlanet/:id', safe(actions.FavPlanets));
 
 export default router;
