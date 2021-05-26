@@ -187,15 +187,15 @@ var FavCharacters = function (req, res) { return __awaiter(void 0, void 0, void 
             case 1:
                 user = _a.sent();
                 if (!user)
-                    throw new utils_1.Exception("User not exist");
+                    throw new utils_1.Exception("User does not exist");
                 characterRepo = typeorm_1.getRepository(Characters_1.Characters);
                 return [4 /*yield*/, characterRepo.findOne(req.params.id)];
             case 2:
                 character = _a.sent();
                 if (!character)
-                    throw new utils_1.Exception("Character not exist");
+                    throw new utils_1.Exception("Character does not exist");
                 if (user.characters.some(function (personaje) { return personaje.id === character.id; }))
-                    throw new utils_1.Exception("Fav character exist");
+                    throw new utils_1.Exception("Fav character already exist");
                 user.characters.push(character);
                 return [4 /*yield*/, userRepo.save(user)];
             case 3:
@@ -215,17 +215,17 @@ var FavPlanets = function (req, res) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 user = _a.sent();
                 if (!user)
-                    throw new utils_1.Exception("User not exist");
+                    throw new utils_1.Exception("User does not exist");
                 planetRepo = typeorm_1.getRepository(Planets_1.Planets);
                 return [4 /*yield*/, planetRepo.findOne(req.params.id)];
             case 2:
                 planet = _a.sent();
                 if (!planet)
-                    throw new utils_1.Exception("User not exist");
+                    throw new utils_1.Exception("User does not exist");
                 // console.log(user.planets);
                 // console.log(planet);
                 if (user.planets.some(function (planeta) { return planeta.id === planet.id; }))
-                    throw new utils_1.Exception("Fav planet exist");
+                    throw new utils_1.Exception("Fav planet already exist");
                 user.planets.push(planet);
                 return [4 /*yield*/, userRepo.save(user)];
             case 3:

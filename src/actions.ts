@@ -81,12 +81,12 @@ export const createPlanet = async (req: Request, res: Response): Promise<Respons
 export const FavCharacters = async (req: Request, res: Response): Promise<Response> => {
     const userRepo = getRepository(Users)
     let user = await userRepo.findOne({ relations: ["characters"], where: { id: req.body.usersId } });
-    if (!user) throw new Exception("User not exist")
+    if (!user) throw new Exception("User does not exist")
 
     const characterRepo = getRepository(Characters)
     const character = await characterRepo.findOne(req.params.id)
-    if (!character) throw new Exception("Character not exist")
-   if ( user.characters.some(personaje => personaje.id === character.id)) throw new Exception("Fav character exist")  
+    if (!character) throw new Exception("Character does not exist")
+   if ( user.characters.some(personaje => personaje.id === character.id)) throw new Exception("Fav character already exist")  
     user.characters.push(character)
     const results = await userRepo.save(user);
     return res.json(results)
@@ -95,15 +95,15 @@ export const FavCharacters = async (req: Request, res: Response): Promise<Respon
 export const FavPlanets = async (req: Request, res: Response): Promise<Response> => {
     const userRepo = getRepository(Users)
     let user = await userRepo.findOne({ relations: ["planets"], where: { id: req.body.usersId } });
-    if (!user) throw new Exception("User not exist")
+    if (!user) throw new Exception("User does not exist")
 
     const planetRepo = getRepository(Planets)
     const planet = await planetRepo.findOne(req.params.id)
-    if (!planet) throw new Exception("User not exist")
+    if (!planet) throw new Exception("User does not exist")
     // console.log(user.planets);
     // console.log(planet);
  
-   if ( user.planets.some(planeta => planeta.id === planet.id)) throw new Exception("Fav planet exist")  
+   if ( user.planets.some(planeta => planeta.id === planet.id)) throw new Exception("Fav planet already exist")  
    
     user.planets.push(planet)
     const results = await userRepo.save(user);
