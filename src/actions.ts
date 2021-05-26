@@ -5,6 +5,7 @@ import { Exception } from './utils'
 import { Characters } from './entities/Characters'
 import { Planets } from './entities/Planets'
 import jwt from 'jsonwebtoken'
+import { userInfo } from 'os'
 
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
 
@@ -25,7 +26,7 @@ export const createUser = async (req: Request, res: Response): Promise<Response>
 }
 
 export const getUsers = async (req: Request, res: Response): Promise<Response> => {
-    const users = await getRepository(Users).find();
+    const users = await getRepository(Users).find({ relations: ["characters", "planets"]});
     return res.json(users);
 }
 
@@ -84,8 +85,8 @@ export const FavCharacters = async (req: Request, res: Response): Promise<Respon
 
     const characterRepo = getRepository(Characters)
     const character = await characterRepo.findOne(req.params.id)
-    if (!character) throw new Exception("User not exist")
-
+    if (!character) throw new Exception("Character not exist")
+   if ( user.characters.some(personaje => personaje.id === character.id)) throw new Exception("Fav character exist")  
     user.characters.push(character)
     const results = await userRepo.save(user);
     return res.json(results)
@@ -99,12 +100,62 @@ export const FavPlanets = async (req: Request, res: Response): Promise<Response>
     const planetRepo = getRepository(Planets)
     const planet = await planetRepo.findOne(req.params.id)
     if (!planet) throw new Exception("User not exist")
-
+    // console.log(user.planets);
+    // console.log(planet);
+ 
+   if ( user.planets.some(planeta => planeta.id === planet.id)) throw new Exception("Fav planet exist")  
+   
     user.planets.push(planet)
     const results = await userRepo.save(user);
     return res.json(results)
 }
 
+export const deleteFavCharacter = async (req: Request, res:Response): Promise<Response> =>{
+
+    const userRepo = getRepository(Users)
+    let user = await userRepo.findOne({ relations: ["characters"], where: { id: req.body.usersId } });
+    if (!user) throw new Exception("User does not exist")
+
+    const characterRepo = getRepository(Characters)
+    const character = await characterRepo.findOne(req.params.id)
+    if (!character) throw new Exception("Character does not exist")
+     
+    if ( !user.characters.some(personaje => personaje.id === character.id)) throw new Exception("Character is not a favorite")  
+    user.characters = user.characters.filter(personaje => personaje.id !== character.id)
+    
+
+    const results = await userRepo.save(user);
+    return res.json(results)
+}
+
+export const deleteFavPlanet = async (req: Request, res:Response): Promise<Response> =>{
+
+    const userRepo = getRepository(Users)
+    let user = await userRepo.findOne({ relations: ["planets"], where: { id: req.body.usersId } });
+    if (!user) throw new Exception("User does not exist")
+
+    const planetsRepo = getRepository(Planets)
+    const planet = await planetsRepo.findOne(req.params.id)
+    if (!planet) throw new Exception("Planet does not exist") 
+     
+    if ( !user.planets.some(planeta => planeta.id === planet.id)) throw new Exception("Planet is not a favorite")  
+    user.planets = user.planets.filter(planeta => planeta.id !== planet.id)
+    
+
+    const results = await userRepo.save(user);
+    return res.json(results)
+}
+
+export const getUsersFav = async (req: Request, res: Response): Promise<Response> => {
+    const userRepo = getRepository(Users)
+    let user = await userRepo.findOne({ relations: ["planets", "characters"], where: { id: req.body.usersId } });
+    if (!user) throw new Exception("User does not exist")
+    var favoritos = {
+        planets: user.planets,
+        characters: user.characters
+    }
+    return res.json(favoritos);
+}
 
 //controlador para el logueo
 export const login = async (req: Request, res: Response): Promise<Response> => {

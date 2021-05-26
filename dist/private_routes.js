@@ -58,4 +58,7 @@ router.get('/planet/:id', utils_1.safe(actions.getPlanet));
 router.post('/planets', utils_1.safe(actions.createPlanet));
 router.post('/favCharacter/:id', utils_1.safe(actions.FavCharacters));
 router.post('/favPlanet/:id', utils_1.safe(actions.FavPlanets));
+router["delete"]('/favCharacter/:id', utils_1.safe(actions.deleteFavCharacter));
+router["delete"]('/favPlanet/:id', utils_1.safe(actions.deleteFavPlanet));
+router.get('/userFav', utils_1.safe(actions.getUsersFav));
 exports["default"] = router;
